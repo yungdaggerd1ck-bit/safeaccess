@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Protótipo · Safe Access</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body>
+<header><div class="topo"><a class="marca" href="index.html"><img src="safe-access.png" alt="Safe Access" class="logo"></a>
+<nav><a href="index.html">Início</a><a href="sobre.html">Sobre</a><a href="servicos.html">Serviços</a><a href="prototipo.html">Protótipo</a><a href="dashboard.html">Dashboard</a><a href="contato.html">Contato</a></nav></div></header>
+<main>
+<section><h2>Protótipo da catraca</h2>
+<p>Abaixo está a simulação do circuito, com o ESP32, os três leitores RFID (cartão, capacete e bota), o servo que movimenta a catraca, os LEDs de liberação e bloqueio e o buzzer. No protótipo físico, todos esses componentes ficam dentro de uma carcaça, e a simulação mostra o que está por baixo dela.</p>
+<iframe class="wokwi" src="https://wokwi.com/projects/478795308053432321" title="Simulação do protótipo Safe Access no Wokwi" loading="lazy"></iframe>
+<p class="aviso">Se a simulação não aparecer, <a href="https://wokwi.com/projects/478795308053432321" target="_blank" rel="noopener">abra o projeto no Wokwi</a>.</p></section>
+<section><h2>Como o protótipo funciona</h2>
+<div class="grade">
+<div class="card"><h3>Leitura do cartão</h3><p>O colaborador aproxima o cartão. O sistema verifica o cadastro e a validade dos treinamentos.</p></div>
+<div class="card"><h3>Verificação dos EPIs</h3><p>Os leitores de capacete e bota confirmam os equipamentos exigidos para a área.</p></div>
+<div class="card"><h3>Decisão</h3><p>Com as duas verificações aprovadas, o servo libera a catraca. Caso contrário, o LED vermelho e o buzzer indicam o bloqueio.</p></div>
+<div class="card"><h3>Registro</h3><p>Cada tentativa é enviada para a planilha, com data, horário e motivo.</p></div>
+</div></section>
+</main>
+<div class="faixa"><h2>Quer ver o portal funcionando na sua operação?</h2><p style="margin:14px 0 22px">Fale com a nossa equipe para uma análise do seu caso.</p><a class="botao" href="contato.html">Solicitar análise</a></div>
+<footer>© Safe Access · Inovação que protege, tecnologia que conecta<br>
+<a href="mailto:safeaccessdiv@gmail.com">safeaccessdiv@gmail.com</a> · (37) 9 9800-9800</footer>
+</body></html>

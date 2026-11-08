@@ -1,0 +1,614 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safe Access · Controle de Acesso</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --laranja:#e8731a; --laranja-d:#c95f0e; --laranja-l:#fff3e6;
+    --aco:#2b2f36; --prata:#d7dbe0;
+    --bg:#f5f6f8; --card:#fff; --txt:#222; --muted:#666; --borda:#e2e4e8;
+    --verde:#2e7d32; --verde-l:#e8f5e9; --verm:#c62828; --verm-l:#ffebee;
+    --amar:#ef6c00; --amar-l:#fff3e0;
+  }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; font-family:system-ui, sans-serif; background:var(--bg); color:var(--txt); }
+
+  header {
+    background:#fff; color:var(--aco); padding:12px 20px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
+    border-bottom:4px solid var(--laranja);
+  }
+  .marca { display:flex; align-items:center; gap:14px; }
+  .logo { height:56px; width:auto; }
+  header h1 { font-size:18px; margin:0; font-weight:600; color:var(--aco); }
+  .setor { font-size:13px; font-weight:600; color:var(--laranja-d); }
+  .status { font-size:12px; color:var(--muted); }
+
+  nav.abas { display:flex; gap:4px; padding:10px 16px 0; max-width:1200px; margin:0 auto; border-bottom:1px solid var(--borda); }
+  .aba { padding:8px 16px; border:none; background:transparent; cursor:pointer; font-size:14px; color:var(--muted); border-bottom:3px solid transparent; margin-bottom:-1px; }
+  .aba.ativa { color:var(--laranja-d); border-bottom-color:var(--laranja); font-weight:600; }
+
+  main { padding:16px; max-width:1200px; margin:0 auto; }
+  .controles { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .controles input, .controles select { padding:8px 10px; border:1px solid var(--borda); border-radius:8px; font-size:14px; background:#fff; }
+  .controles label { font-size:13px; color:var(--muted); }
+  .btn { padding:8px 14px; border:none; border-radius:8px; font-size:14px; background:var(--laranja); color:#fff; cursor:pointer; font-weight:600; }
+  .btn:hover { background:var(--laranja-d); }
+  .btn.sec { background:#fff; color:var(--aco); border:1px solid var(--aco); font-weight:500; }
+  .btn.sec:hover { background:var(--prata); }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px; }
+  .card { background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:14px; border-top:3px solid var(--laranja); }
+  .card .rot { font-size:12px; color:var(--muted); }
+  .card .val { font-size:26px; font-weight:600; margin-top:4px; color:var(--aco); }
+
+  .graficos { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:12px; margin-bottom:16px; }
+  .box { background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:14px; }
+  .box h2 { font-size:15px; margin:0 0 10px; font-weight:600; color:var(--aco); }
+
+  .wrap { overflow:auto; max-height:460px; background:#fff; border:1px solid var(--borda); border-radius:12px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { padding:8px 10px; border-bottom:1px solid var(--borda); text-align:left; white-space:nowrap; }
+  th { background:var(--aco); color:#fff; position:sticky; top:0; font-weight:600; }
+  td.nome a { color:var(--laranja-d); cursor:pointer; text-decoration:underline; font-weight:600; }
+  .liberado { background:var(--verde-l); color:var(--verde); font-weight:600; }
+  .negado { background:var(--verm-l); color:var(--verm); font-weight:600; }
+  .sim { color:var(--verde); }
+  .nao { color:var(--verm); font-weight:600; }
+  .erro { background:var(--verm-l); color:var(--verm); padding:12px; border-radius:8px; margin-bottom:12px; display:none; }
+
+  .alerta-box { background:var(--laranja-l); border:1px solid #f5b98a; border-left:6px solid var(--laranja); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:14px; }
+  .colab-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+  .colab { background:#fff; border:1px solid var(--borda); border-left:6px solid #bbb; border-radius:12px; padding:14px; cursor:pointer; }
+  .colab:hover { box-shadow:0 2px 10px rgba(0,0,0,.12); }
+  .colab.vencido { border-left-color:var(--verm); }
+  .colab.alerta { border-left-color:var(--laranja); }
+  .colab.ok { border-left-color:var(--verde); }
+  .colab h3 { margin:0 0 4px; font-size:16px; font-weight:600; color:var(--aco); }
+  .colab .uid { font-size:12px; color:var(--muted); }
+  .linha { font-size:13px; margin-top:8px; }
+  .badge { display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; font-weight:600; }
+  .b-vencido { background:var(--verm-l); color:var(--verm); }
+  .b-alerta { background:var(--laranja-l); color:var(--laranja-d); }
+  .b-ok { background:var(--verde-l); color:var(--verde); }
+  .b-neutro { background:#eee; color:var(--muted); }
+  .chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  .chip { font-size:11px; padding:2px 7px; border-radius:6px; }
+  .chip.ok { background:var(--verde-l); color:var(--verde); }
+  .chip.pend { background:var(--verm-l); color:var(--verm); }
+
+  .modal { position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; padding:16px; z-index:10; }
+  .modal-corpo { background:#fff; border-radius:14px; padding:20px; max-width:760px; width:100%; max-height:90vh; overflow:auto; border-top:4px solid var(--laranja); }
+  .modal-topo { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .modal-topo h2 { margin:0; font-size:18px; font-weight:600; color:var(--aco); }
+  .fechar { background:none; border:none; font-size:24px; cursor:pointer; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="marca">
+    <img src="safe-access.png" alt="Safe Access" class="logo" onerror="this.style.display='none'">
+    <div>
+      <h1>Controle de Acesso</h1>
+      <span class="setor">Caldeiraria</span>
+    </div>
+  </div>
+  <span class="status" id="status"></span>
+  <a href="index.html" class="status" style="color:#c95f0e;text-decoration:none;font-weight:600">← Voltar ao site</a>
+</header>
+
+<nav class="abas">
+  <button class="aba ativa" data-aba="acessos">Acessos</button>
+  <button class="aba" data-aba="colab">Colaboradores</button>
+</nav>
+
+<main>
+  <div class="erro" id="erro"></div>
+
+  <!-- ===== ABA ACESSOS ===== -->
+  <section id="secAcessos">
+    <div class="controles">
+      <input type="date" id="dataSel" title="Vazio = todos os dias">
+      <select id="resSel">
+        <option value="todos">Todos os resultados</option>
+        <option value="liberado">Liberados</option>
+        <option value="negado">Negados</option>
+      </select>
+      <input type="text" id="buscaNome" placeholder="Buscar nome">
+      <button class="btn sec" id="btnLimpar">Limpar filtros</button>
+      <button class="btn" id="btnCSV">Exportar CSV</button>
+      <button class="btn" id="btnAtualizar">Atualizar</button>
+      <label><input type="checkbox" id="autoRefresh"> atualizar a cada 1 min</label>
+    </div>
+
+    <div class="cards" id="cardsAcessos"></div>
+
+    <div class="graficos">
+      <div class="box"><h2>Entradas por hora</h2><canvas id="chartHora"></canvas></div>
+      <div class="box"><h2>EPI faltando</h2><canvas id="chartEpi"></canvas></div>
+    </div>
+
+    <div class="wrap">
+      <table>
+        <thead>
+          <tr><th>Data</th><th>Hora</th><th>Nome</th><th>UID</th><th>Capacete</th><th>Botina</th><th>Resultado</th><th>Motivo</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== ABA COLABORADORES ===== -->
+  <section id="secColab" hidden>
+    <div class="controles">
+      <input type="text" id="buscaColab" placeholder="Buscar colaborador">
+      <select id="filtroColab">
+        <option value="todos">Todos</option>
+        <option value="vencido">Treinamento vencido</option>
+        <option value="alerta">Vencendo em breve</option>
+        <option value="ok">Em dia</option>
+        <option value="semacesso">Sem acesso ao setor</option>
+      </select>
+      <select id="ordemColab">
+        <option value="vencimento">Ordenar: vencimento mais próximo</option>
+        <option value="nome">Ordenar: nome</option>
+      </select>
+      <button class="btn sec" id="btnSyncCadastro" title="Atualiza os dados da planilha no painel">Recarregar cadastro</button>
+      <span id="syncStatus" class="status" style="margin-left:8px;"></span>
+    </div>
+
+    <div class="cards" id="cardsColab"></div>
+    <div id="alertaColab"></div>
+    <div class="colab-grid" id="gridColab"></div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-corpo" id="modalCorpo"></div>
+</div>
+
+<script>
+// ================= CONFIGURAÇÃO =================
+const URL_API = 'https://script.google.com/macros/s/AKfycbyZeLyggyF7Ipyqt9ykA55gp2DGyg4VRaCDJRyIlxLCnU-IalRvsNigSKiILDzVJxZd/exec';   // termina em /exec, sem ?token
+const TOKEN = 'leitura2026';     // igual ao LEITURA_TOKEN do script
+const DIAS_ALERTA = 30;
+const MOTIVOS_SEM_EPI = ['cartão não cadastrado', 'sem acesso ao setor', 'normas de segurança pendentes'];
+
+// ================= ESTADO =================
+let registros = [];
+let cadastro = [];
+let chartHora = null;
+let chartEpi = null;
+let timer = null;
+
+const $ = id => document.getElementById(id);
+const norm = s => String(s ?? '').trim().toUpperCase();
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function isoParaBR(iso) {
+  if (!iso) return '';
+  const [a, m, d] = iso.split('-');
+  return `${d}/${m}/${a}`;
+}
+
+// "24/10/2026" -> Date (meia-noite local); outro formato -> null
+function parseBR(s) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(s ?? '').trim());
+  return m ? new Date(+m[3], +m[2] - 1, +m[1]) : null;
+}
+
+// Dias até a data de vencimento (negativo = já venceu)
+function diasAte(s) {
+  const d = parseBR(s);
+  if (!d) return null;
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  return Math.round((d - hoje) / 86400000);
+}
+
+function situacao(dias) {
+  if (dias === null) return { cls: 'neutro', badge: 'b-neutro', txt: 'sem data válida' };
+  if (dias < 0) return { cls: 'vencido', badge: 'b-vencido', txt: `vencido há ${-dias} dia(s)` };
+  if (dias <= DIAS_ALERTA) return { cls: 'alerta', badge: 'b-alerta', txt: `vence em ${dias} dia(s)` };
+  return { cls: 'ok', badge: 'b-ok', txt: `vence em ${dias} dia(s)` };
+}
+
+// Quando o cartão não foi lido ou o acesso foi barrado antes dos EPIs,
+// o registro não diz nada sobre capacete e bota. Esses registros ficam de fora das estatísticas de EPI.
+function avaliouEPI(r) {
+  return !MOTIVOS_SEM_EPI.includes(r.motivo) && r.nome !== 'não cadastrado';
+}
+
+// ================= CARREGAR DA PLANILHA =================
+async function carregar() {
+  $('status').textContent = 'Atualizando...';
+  $('erro').style.display = 'none';
+  try {
+    const r = await fetch(`${URL_API}?token=${encodeURIComponent(TOKEN)}`);
+    const j = await r.json();
+    if (j.ok === false) throw new Error(j.erro || 'acesso negado');
+    if (!Array.isArray(j.registros)) throw new Error('o script ainda está na versão antiga; publique a versão nova');
+
+    registros = j.registros.slice(1).map(l => ({
+      data: String(l[0] ?? ''),
+      hora: String(l[1] ?? ''),
+      nome: String(l[2] ?? ''),
+      uid: String(l[3] ?? ''),
+      capacete: String(l[4] ?? ''),
+      botina: String(l[5] ?? ''),
+      resultado: String(l[6] ?? ''),
+      motivo: String(l[7] ?? '')
+    }));
+
+    cadastro = (j.cadastro || []).slice(1)
+      .filter(l => norm(l[0]) !== '')
+      .map(l => ({
+        uid: String(l[0] ?? '').trim(),
+        nome: String(l[1] ?? '').trim(),
+        acesso: norm(l[2]) === 'SIM',
+        normasOk: norm(l[3]) === 'SIM',
+        normas: String(l[4] ?? '').split(',').map(x => x.trim()).filter(Boolean),
+        vencimento: String(l[5] ?? '').trim()
+      }));
+
+    atualizarTudo();
+    $('status').textContent = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
+  } catch (e) {
+    $('erro').textContent = 'Não foi possível carregar: ' + e.message;
+    $('erro').style.display = 'block';
+    $('status').textContent = '';
+  }
+}
+
+function atualizarTudo() {
+  atualizarAcessos();
+  atualizarColab();
+}
+
+// ================= ABA ACESSOS =================
+function doDia() {
+  const alvo = isoParaBR($('dataSel').value);
+  return alvo ? registros.filter(r => r.data === alvo) : registros;
+}
+
+function visiveis() {
+  const res = $('resSel').value;
+  const busca = norm($('buscaNome').value);
+  return doDia().filter(r =>
+    (res === 'todos' || r.resultado === res) &&
+    norm(r.nome).includes(busca)
+  );
+}
+
+function cardHTML(rotulo, valor) {
+  return `<div class="card"><div class="rot">${rotulo}</div><div class="val">${valor}</div></div>`;
+}
+
+function atualizarAcessos() {
+  atualizarCardsAcessos();
+  atualizarGraficos();
+  atualizarTabela();
+}
+
+function atualizarCardsAcessos() {
+  const base = doDia();
+  const total = base.length;
+  const lib = base.filter(r => r.resultado === 'liberado').length;
+  const neg = base.filter(r => r.resultado === 'negado').length;
+  const comEPI = base.filter(avaliouEPI);
+  const epiOk = comEPI.filter(r => r.capacete === 'sim' && r.botina === 'sim').length;
+  const semCap = comEPI.filter(r => r.capacete !== 'sim').length;
+  const semBota = comEPI.filter(r => r.botina !== 'sim').length;
+  const pct = comEPI.length ? Math.round(epiOk / comEPI.length * 100) : 0;
+
+  $('cardsAcessos').innerHTML =
+    cardHTML('Total de passagens', total) +
+    cardHTML('Liberados', lib) +
+    cardHTML('Negados', neg) +
+    cardHTML('EPI completo', pct + '%') +
+    cardHTML('Sem capacete', semCap) +
+    cardHTML('Sem bota', semBota);
+}
+
+function atualizarGraficos() {
+  const base = doDia();
+  const horas = [...Array(24).keys()];
+  const hora = r => parseInt(r.hora, 10);
+
+  const libH = horas.map(h => base.filter(r => r.resultado === 'liberado' && hora(r) === h).length);
+  const negH = horas.map(h => base.filter(r => r.resultado === 'negado' && hora(r) === h).length);
+
+  if (!chartHora) {
+    chartHora = new Chart($('chartHora'), {
+      type: 'bar',
+      data: {
+        labels: horas.map(h => h + 'h'),
+        datasets: [
+          { label: 'Liberados', data: libH, backgroundColor: '#2e7d32' },
+          { label: 'Negados', data: negH, backgroundColor: '#c62828' }
+        ]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+  } else {
+    chartHora.data.datasets[0].data = libH;
+    chartHora.data.datasets[1].data = negH;
+    chartHora.update();
+  }
+
+  const comEPI = base.filter(avaliouEPI);
+  const semCap = comEPI.filter(r => r.capacete !== 'sim').length;
+  const semBota = comEPI.filter(r => r.botina !== 'sim').length;
+
+  if (!chartEpi) {
+    chartEpi = new Chart($('chartEpi'), {
+      type: 'bar',
+      data: {
+        labels: ['Sem capacete', 'Sem bota'],
+        datasets: [{ label: 'Ocorrências', data: [semCap, semBota], backgroundColor: ['#c62828', '#e8731a'] }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  } else {
+    chartEpi.data.datasets[0].data = [semCap, semBota];
+    chartEpi.update();
+  }
+}
+
+function atualizarTabela() {
+  const tbody = $('tbody');
+  tbody.innerHTML = '';
+  const lista = visiveis().slice().reverse();
+
+  if (lista.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8">Nenhum registro para os filtros selecionados.</td></tr>';
+    return;
+  }
+
+  for (const r of lista) {
+    const tr = document.createElement('tr');
+    const colunas = [r.data, r.hora, r.nome, r.uid, r.capacete, r.botina, r.resultado, r.motivo];
+    colunas.forEach((valor, i) => {
+      const td = document.createElement('td');
+      if (i === 2) {
+        td.className = 'nome';
+        const a = document.createElement('a');
+        a.textContent = valor;
+        a.addEventListener('click', () => abrirColaborador(r.uid));
+        td.appendChild(a);
+      } else {
+        td.textContent = valor;
+      }
+      if (i === 4 || i === 5) td.className = valor === 'sim' ? 'sim' : 'nao';
+      if (i === 6) td.className = valor === 'liberado' ? 'liberado' : 'negado';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+}
+
+function exportarCSV() {
+  const linhas = [['Data', 'Hora', 'Nome', 'UID', 'Capacete', 'Botina', 'Resultado', 'Motivo']]
+    .concat(visiveis().map(r => [r.data, r.hora, r.nome, r.uid, r.capacete, r.botina, r.resultado, r.motivo]));
+  const csv = linhas
+    .map(l => l.map(c => `"${String(c).replace(/"/g, '""')}"`).join(';'))
+    .join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'acessos_' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+}
+
+// ================= ABA COLABORADORES =================
+function infoColab(c) {
+  const dias = diasAte(c.vencimento);
+  const acessos = registros.filter(r => norm(r.uid) === norm(c.uid));
+  const ultimo = acessos.length ? acessos[acessos.length - 1] : null;
+  return { ...c, dias, sit: situacao(dias), acessos, ultimo };
+}
+
+function listaColab() {
+  const busca = norm($('buscaColab').value);
+  const filtro = $('filtroColab').value;
+  let lista = cadastro.map(infoColab).filter(c => norm(c.nome).includes(busca));
+
+  if (filtro === 'vencido') lista = lista.filter(c => c.sit.cls === 'vencido');
+  if (filtro === 'alerta') lista = lista.filter(c => c.sit.cls === 'alerta');
+  if (filtro === 'ok') lista = lista.filter(c => c.sit.cls === 'ok');
+  if (filtro === 'semacesso') lista = lista.filter(c => !c.acesso);
+
+  if ($('ordemColab').value === 'nome') {
+    lista.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  } else {
+    lista.sort((a, b) => (a.dias ?? 99999) - (b.dias ?? 99999));
+  }
+  return lista;
+}
+
+function cardColab(c) {
+  const chips = c.normas.map(n =>
+    `<span class="chip ${c.normasOk ? 'ok' : 'pend'}">${esc(n)}</span>`).join('');
+  const ultimo = c.ultimo ? esc(c.ultimo.data + ' ' + c.ultimo.hora) : '—';
+  return `
+    <div class="colab ${c.sit.cls}" data-uid="${esc(c.uid)}">
+      <h3>${esc(c.nome)}</h3>
+      <div class="uid">${esc(c.uid)}</div>
+      <div class="linha"><span class="badge ${c.sit.badge}">${esc(c.sit.txt)}</span></div>
+      <div class="linha">Vencimento: ${esc(c.vencimento || '—')}</div>
+      <div class="linha">Acesso ao setor: <strong class="${c.acesso ? 'sim' : 'nao'}">${c.acesso ? 'sim' : 'não'}</strong></div>
+      <div class="linha">Acessos registrados: ${c.acessos.length}</div>
+      <div class="linha">Último acesso: ${ultimo}</div>
+      <div class="chips">${chips}</div>
+    </div>`;
+}
+
+function atualizarColab() {
+  const todos = cadastro.map(infoColab);
+  const vencidos = todos.filter(c => c.sit.cls === 'vencido').length;
+  const alerta = todos.filter(c => c.sit.cls === 'alerta').length;
+  const semAcesso = todos.filter(c => !c.acesso).length;
+  const normasPend = todos.filter(c => !c.normasOk).length;
+
+  $('cardsColab').innerHTML =
+    cardHTML('Colaboradores', todos.length) +
+    cardHTML('Treinamento vencido', vencidos) +
+    cardHTML(`Vencem em até ${DIAS_ALERTA} dias`, alerta) +
+    cardHTML('Sem acesso ao setor', semAcesso) +
+    cardHTML('Normas pendentes', normasPend);
+
+  const precisam = todos
+    .filter(c => c.sit.cls === 'vencido' || c.sit.cls === 'alerta' || !c.normasOk)
+    .sort((a, b) => (a.dias ?? 99999) - (b.dias ?? 99999));
+
+  $('alertaColab').innerHTML = precisam.length
+    ? '<div class="alerta-box"><strong>Atenção:</strong> ' +
+      precisam.map(c => esc(c.nome) + ' (' + esc(c.sit.txt) + (c.normasOk ? '' : ', normas pendentes') + ')').join(' · ') +
+      '</div>'
+    : '';
+
+  const lista = listaColab();
+  $('gridColab').innerHTML = lista.length
+    ? lista.map(cardColab).join('')
+    : '<p>Nenhum colaborador para os filtros selecionados.</p>';
+}
+
+// ================= MODAL DO COLABORADOR =================
+function abrirColaborador(uid) {
+  const c = cadastro.find(x => norm(x.uid) === norm(uid));
+  const acessos = registros.filter(r => norm(r.uid) === norm(uid));
+  const nomeExibido = c ? c.nome : (acessos.length ? acessos[0].nome : 'Desconhecido');
+
+  let topo;
+  if (c) {
+    const info = infoColab(c);
+    topo = `
+      <p>UID: <strong>${esc(c.uid)}</strong></p>
+      <p>Acesso ao setor: <strong class="${c.acesso ? 'sim' : 'nao'}">${c.acesso ? 'sim' : 'não'}</strong></p>
+      <p>Vencimento: <strong>${esc(c.vencimento || '—')}</strong>
+         <span class="badge ${info.sit.badge}">${esc(info.sit.txt)}</span></p>
+      <p>Normas (${c.normasOk ? 'em dia' : 'pendentes'}):</p>
+      <div class="chips">${c.normas.map(n =>
+        `<span class="chip ${c.normasOk ? 'ok' : 'pend'}">${esc(n)}</span>`).join('')}</div>`;
+  } else {
+    topo = '<p>Este UID não está no cadastro.</p>';
+  }
+
+  const ultimos = acessos.slice(-10).reverse();
+  const tabela = ultimos.length
+    ? `<table>
+         <thead><tr><th>Data</th><th>Hora</th><th>Capacete</th><th>Botina</th><th>Resultado</th><th>Motivo</th></tr></thead>
+         <tbody>${ultimos.map(r => `
+           <tr>
+             <td>${esc(r.data)}</td>
+             <td>${esc(r.hora)}</td>
+             <td class="${r.capacete === 'sim' ? 'sim' : 'nao'}">${esc(r.capacete)}</td>
+             <td class="${r.botina === 'sim' ? 'sim' : 'nao'}">${esc(r.botina)}</td>
+             <td class="${r.resultado === 'liberado' ? 'liberado' : 'negado'}">${esc(r.resultado)}</td>
+             <td>${esc(r.motivo)}</td>
+           </tr>`).join('')}
+         </tbody>
+       </table>`
+    : '<p>Nenhum acesso registrado.</p>';
+
+  $('modalCorpo').innerHTML = `
+    <div class="modal-topo">
+      <h2>${esc(nomeExibido)}</h2>
+      <button class="fechar" id="btnFechar" aria-label="Fechar">×</button>
+    </div>
+    ${topo}
+    <h3 style="font-size:14px;margin-top:16px;color:#2b2f36;">Últimos acessos (${acessos.length} no total)</h3>
+    <div class="wrap" style="max-height:260px;">${tabela}</div>
+    <div style="margin-top:14px;">
+      <button class="btn" id="btnVerAcessos">Ver todos os acessos desta pessoa</button>
+    </div>`;
+
+  $('modal').hidden = false;
+  $('btnFechar').onclick = () => { $('modal').hidden = true; };
+  $('btnVerAcessos').onclick = () => {
+    $('modal').hidden = true;
+    trocaAba('acessos');
+    $('buscaNome').value = nomeExibido;
+    atualizarAcessos();
+  };
+}
+
+// ================= ABAS =================
+function trocaAba(nome) {
+  document.querySelectorAll('.aba').forEach(b => b.classList.toggle('ativa', b.dataset.aba === nome));
+  $('secAcessos').hidden = nome !== 'acessos';
+  $('secColab').hidden = nome !== 'colab';
+}
+
+// ================= EVENTOS =================
+document.querySelectorAll('.aba').forEach(b =>
+  b.addEventListener('click', () => trocaAba(b.dataset.aba)));
+
+$('dataSel').addEventListener('change', atualizarAcessos);
+$('resSel').addEventListener('change', atualizarTabela);
+$('buscaNome').addEventListener('input', atualizarTabela);
+$('btnLimpar').addEventListener('click', () => {
+  $('dataSel').value = '';
+  $('resSel').value = 'todos';
+  $('buscaNome').value = '';
+  atualizarAcessos();
+});
+$('btnCSV').addEventListener('click', exportarCSV);
+$('btnAtualizar').addEventListener('click', carregar);
+
+$('buscaColab').addEventListener('input', atualizarColab);
+['filtroColab', 'ordemColab'].forEach(id => $(id).addEventListener('change', atualizarColab));
+
+$('btnSyncCadastro').addEventListener('click', sincronizarCadastro);
+
+$('gridColab').addEventListener('click', e => {
+  const card = e.target.closest('.colab');
+  if (card) abrirColaborador(card.dataset.uid);
+});
+
+$('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') $('modal').hidden = true;
+});
+
+$('autoRefresh').addEventListener('change', e => {
+  clearInterval(timer);
+  if (e.target.checked) timer = setInterval(carregar, 60000);
+});
+
+// ================= SINCRONIZAÇÃO CADASTRO =================
+async function sincronizarCadastro() {
+  const btn = $('btnSyncCadastro');
+  const status = $('syncStatus');
+  const originalText = btn.textContent;
+
+  btn.disabled = true;
+  btn.textContent = 'Sincronizando...';
+  status.textContent = 'Enviando solicitação ao ESP32...';
+
+  try {
+    // O ESP32 faz polling a cada 5 min. Este endpoint apenas força o dashboard a recarregar.
+    // Para forçar sync no ESP32, seria necessário infraestrutura adicional (MQTT, Firebase, etc.)
+    // Por enquanto, apenas atualizamos o dashboard com dados frescos da planilha.
+    await carregar();
+    status.textContent = 'Cadastro recarregado.';
+    setTimeout(() => { status.textContent = ''; }, 5000);
+  } catch (e) {
+    status.textContent = 'Erro: ' + e.message;
+    setTimeout(() => { status.textContent = ''; }, 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+carregar();
+</script>
+</body>
+</html>
