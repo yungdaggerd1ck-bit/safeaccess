@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portal de acesso com EPI — protótipo 3D</title>
+<style>
+:root{--bg:#efece6;--fg:#1d1d1b;--mu:#6b675f;--pn:#fbfaf8;--bd:#d6d1c6;--ac:#1f5fbf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1d20;--fg:#ecebe7;--mu:#a09c92;--pn:#26272b;--bd:#3a3b40;--ac:#6ea2f5}}
+:root[data-theme="dark"]{--bg:#1c1d20;--fg:#ecebe7;--mu:#a09c92;--pn:#26272b;--bd:#3a3b40;--ac:#6ea2f5}
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;background:var(--bg);color:var(--fg);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+#c{flex:1;min-height:0;position:relative;touch-action:none}
+#c canvas{display:block;width:100%;height:100%}
+#p{background:var(--pn);border-top:1px solid var(--bd);padding:10px 14px 12px}
+.st,.op{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:8px}
+.st span{color:var(--mu)}.st b{color:var(--fg)}
+.op label{display:flex;align-items:center;gap:6px}
+button{font:inherit;font-weight:600;background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 16px;width:100%}
+button:disabled{opacity:.5}
+button:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+#log{margin-top:8px;height:84px;overflow:auto;font:12px/1.5 ui-monospace,Menlo,monospace;color:var(--mu)}
+#log div:first-child{color:var(--fg)}
+</style></head><body>
+<div id="c"></div>
+<div id="p">
+ <div class="st"><span>Estado: <b id="s1">Em espera</b></span><span>Servo: <b id="s2">0°</b></span><span>Lâmpada: <b id="s3">vermelha</b></span></div>
+ <div class="op"><label><input type="checkbox" id="hel" checked> Capacete</label><label><input type="checkbox" id="vest" checked> Colete</label><label><input type="checkbox" id="card" checked> Cartão cadastrado</label></div>
+ <button id="go">Passar pelo portal</button>
+ <div id="log"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),wrap=$('c');
+const R=new THREE.WebGLRenderer({antialias:true,alpha:true});
+R.shadowMap.enabled=true;R.setPixelRatio(Math.min(devicePixelRatio,2));wrap.appendChild(R.domElement);
+const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(40,1,1,400);
+function fit(){const w=wrap.clientWidth,h=wrap.clientHeight;R.setSize(w,h);C.aspect=w/h;C.updateProjectionMatrix()}
+addEventListener('resize',fit);
+S.add(new THREE.HemisphereLight(0xffffff,0x8a8070,.8));
+const DL=new THREE.DirectionalLight(0xffffff,.8);DL.position.set(25,45,30);DL.castShadow=true;
+Object.assign(DL.shadow.camera,{left:-32,right:32,top:32,bottom:-32,near:1,far:140});DL.shadow.mapSize.set(1024,1024);S.add(DL);
+
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o));
+const B=(w,h,d,m,x,y,z,p=S)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;p.add(o);return o};
+const Sp=(r,m,x,y,z,p=S)=>{const o=new THREE.Mesh(new THREE.SphereGeometry(r,20,14),m);o.position.set(x,y,z);o.castShadow=true;p.add(o);return o};
+const wire=(pts,c)=>{S.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(...p))),new THREE.LineBasicMaterial({color:c})))};
+
+// Base e portal (medidas em cm)
+const mdf=M(0xc9a373),mdf2=M(0xdbbf92);
+B(30,3,30,mdf,0,1.5,0);
+B(3,17,10,mdf2,-6.5,11.5,0);B(3,17,10,mdf2,6.5,11.5,0);B(16,3,10,mdf2,0,21.5,0);
+
+// Lâmpadas
+const gM=M(0x1c7a35,{emissive:0x2cff5c,emissiveIntensity:.05}),rM=M(0x8a1c1c,{emissive:0xff2a2a,emissiveIntensity:1.6});
+Sp(1,gM,-2.5,18.8,3.5);Sp(1,rM,2.5,18.8,3.5);
+const lamp=(g)=>{gM.emissiveIntensity=g?1.6:.05;rM.emissiveIntensity=g?.05:1.6;$('s3').textContent=g?'verde':'vermelha'};
+
+// Leitor RFID RC522
+B(3.6,2.4,.4,M(0x1f5fb0),0,21.5,5.2);B(2.2,1.3,.05,M(0xe8e8e8,{metalness:.5}),0,21.3,5.43);
+const rdM=M(0x333333,{emissive:0x3aa0ff,emissiveIntensity:0});Sp(.18,rdM,1.4,22.4,5.5);
+
+// Sensores de EPI
+function sensor(y){const g=new THREE.Group();g.position.set(4.5,y,1.5);S.add(g);
+ B(.5,1.2,1.4,M(0x222222),0,0,0,g);
+ [-.35,.35].forEach(z=>{const e=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.2,14),M(0xd0d0d0,{metalness:.6}));e.rotation.z=Math.PI/2;e.position.set(-.3,0,z);g.add(e)});
+ const m=M(0x555555,{emissive:0x000000});Sp(.18,m,0,.8,0,g);return m}
+const sH=sensor(14.7),sV=sensor(10.9);
+const led=(m,c)=>{m.color.set(c);m.emissive.set(c)};
+
+// Servo SG90 + catraca
+const servo=B(2.25,2.27,1.18,M(0x1f3fb0,{transparent:true,opacity:.9}),-3.9,4.135,0);
+const P=new THREE.Group();P.position.set(-4.6,3,0);S.add(P);
+const cyl=(r,h,m,x,y,z,p)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,14),m);o.position.set(x,y,z);o.castShadow=true;p.add(o)};
+cyl(.28,3.9,M(0xeeeeee),0,4.1,0,P);
+B(8.8,4,.5,M(0xb98b55),4.4,8,0,P);
+[1,-1].forEach(s=>{const d=B(9.6,.12,.06,M(0x6b4a25),4.4,8,.29,P);d.rotation.z=s*Math.atan(4/8.8)});
+const setServo=a=>{P.rotation.y=a*Math.PI/180;$('s2').textContent=Math.round(a)+'°'};
+
+// ESP32
+const E=new THREE.Group();E.position.set(10,3.15,8);S.add(E);
+B(5.2,.25,2.8,M(0x151515),0,0,0,E);B(2.4,.3,1.8,M(0xcfcfcf,{metalness:.6}),.8,.28,0,E);B(.8,.4,.7,M(0xaaaaaa,{metalness:.7}),-2.4,.3,0,E);
+const eM=M(0x333333,{emissive:0x2cff5c,emissiveIntensity:0});Sp(.15,eM,-1.4,.25,.9,E);
+setInterval(()=>{eM.emissiveIntensity=eM.emissiveIntensity?0:1.5},500);
+wire([[10,3.3,8],[6.5,3.3,8],[6.5,3.3,5.4],[6.5,21.5,5.4],[0,21.5,5.5]],0xe03a3a);
+wire([[10,3.3,8],[-3.9,3.3,0]],0xf2c200);
+wire([[10,3.3,8],[4.45,3.3,1.5],[4.45,14.7,1.5]],0x2cb05a);
+
+// Boneco com EPI
+const D=new THREE.Group();D.position.set(0,3,14);S.add(D);
+const skin=M(0xf1c27d),shirt=M(0x3b6ea5),pants=M(0x2f2f35);
+const limb=(x,y,w,h,m)=>{const g=new THREE.Group();g.position.set(x,y,0);D.add(g);B(w,h,w,m,0,-h/2,0,g);return g};
+const legL=limb(-1.1,5,1.5,5,pants),legR=limb(1.1,5,1.5,5,pants),armL=limb(-2.6,10,1,4,shirt),armR=limb(2.6,10,1,4,shirt);
+B(4,5,2,shirt,0,7.5,0,D);Sp(1.5,skin,0,11.7,0,D);B(.5,.5,.5,skin,0,11.6,-1.6,D);
+const helm=new THREE.Mesh(new THREE.SphereGeometry(1.75,20,10,0,Math.PI*2,0,Math.PI/2),M(0xf2c200,{side:THREE.DoubleSide}));helm.position.set(0,11.9,0);helm.castShadow=true;D.add(helm);
+const vestG=new THREE.Group();D.add(vestG);B(4.2,3.6,2.2,M(0xff6a00),0,7.9,0,vestG);B(4.25,.4,2.25,M(0xdddddd,{metalness:.4}),0,8.5,0,vestG);B(4.25,.4,2.25,M(0xdddddd,{metalness:.4}),0,7.2,0,vestG);
+const cardM=B(1.6,.05,1,M(0xffffff),0,12,7.5);cardM.visible=false;B(1.6,.06,.25,M(0x1f5fb0),0,0,.3,cardM);
+let ph=0;
+function pose(){const s=Math.sin(ph)*.6;legL.rotation.x=s;legR.rotation.x=-s;armL.rotation.x=-s*.8;armR.rotation.x=s*.8}
+
+// Câmera orbital (arrastar = girar, pinça/roda = zoom)
+let th=.55,pp=1.12,rr=64;const tg=new THREE.Vector3(0,9,2),pts=new Map();let pd=0;
+const wc=wrap;
+wc.addEventListener('pointerdown',e=>{wc.setPointerCapture(e.pointerId);pts.set(e.pointerId,e)});
+wc.addEventListener('pointerup',e=>pts.delete(e.pointerId));wc.addEventListener('pointercancel',e=>pts.delete(e.pointerId));
+wc.addEventListener('pointermove',e=>{const o=pts.get(e.pointerId);if(!o)return;
+ if(pts.size==1){th-=(e.clientX-o.clientX)*.007;pp=Math.min(1.5,Math.max(.25,pp-(e.clientY-o.clientY)*.007))}
+ pts.set(e.pointerId,e);if(pts.size==2){const [a,b]=[...pts.values()],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);if(pd)rr=Math.min(120,Math.max(28,rr*pd/d));pd=d}else pd=0});
+wc.addEventListener('wheel',e=>{e.preventDefault();rr=Math.min(120,Math.max(28,rr*(1+e.deltaY*.001)))},{passive:false});
+(function loop(){C.position.set(tg.x+rr*Math.sin(pp)*Math.sin(th),tg.y+rr*Math.cos(pp),tg.z+rr*Math.sin(pp)*Math.cos(th));C.lookAt(tg);R.render(S,C);requestAnimationFrame(loop)})();
+
+// Lógica do sistema
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const tween=(ms,fn)=>new Promise(r=>{const t0=performance.now();(function s(){const k=Math.min(1,(performance.now()-t0)/ms);fn(k);k<1?requestAnimationFrame(s):r()})()});
+const ease=k=>k*k*(3-2*k);
+const state=t=>$('s1').textContent=t;
+const logEl=$('log');
+function log(t){const d=document.createElement('div');d.textContent=t;logEl.prepend(d);while(logEl.children.length>40)logEl.lastChild.remove()}
+async function walk(z,ms){const z0=D.position.z;await tween(ms,k=>{D.position.z=z0+(z-z0)*k;ph=D.position.z*1.3;pose()});ph=0;pose()}
+async function servoTo(a0,a1){log(`ESP32 → servo SG90: ${a0}° → ${a1}°`);await tween(900,k=>setServo(a0+(a1-a0)*ease(k)))}
+const DB={'04 A3 5F 1C':'Aluno 01'};
+async function deny(z){state('Acesso negado');for(let i=0;i<3;i++){lamp(true);await sleep(200);lamp(false);await sleep(200)}
+ lamp(false);D.rotation.y=Math.PI;await walk(z,2200);D.rotation.y=0}
+async function run(){
+ const hel=$('hel').checked,vest=$('vest').checked,known=$('card').checked;
+ const uid=known?'04 A3 5F 1C':'7E 22 91 0B';
+ $('go').disabled=true;helm.visible=hel;vestG.visible=vest;
+ led(sH,0x555555);led(sV,0x555555);setServo(0);lamp(false);D.rotation.y=0;D.position.z=14;
+ state('Aguardando cartão');log('ESP32: catraca travada, lâmpada vermelha');
+ await walk(9,1800);
+ state('Lendo cartão');cardM.visible=true;rdM.emissiveIntensity=1.5;
+ await tween(900,k=>{cardM.position.set(0,12+9.5*k,7.5-1.7*k)});
+ log(`RC522: UID ${uid}`);await sleep(500);cardM.visible=false;rdM.emissiveIntensity=0;
+ if(!DB[uid]){log('Banco de dados: cartão não cadastrado');await deny(14);log('Ciclo encerrado');state('Em espera');$('go').disabled=false;return}
+ log(`Banco de dados: ${DB[uid]} autorizado`);
+ state('Verificando EPI');await walk(1.8,1500);
+ led(sH,hel?0x2cff5c:0xff2a2a);led(sV,vest?0x2cff5c:0xff2a2a);
+ log(`Sensores: capacete ${hel?'OK':'AUSENTE'}, colete ${vest?'OK':'AUSENTE'}`);await sleep(800);
+ if(!(hel&&vest)){log('EPI incompleto: acesso negado');await deny(14);led(sH,0x555555);led(sV,0x555555);log('Ciclo encerrado');state('Em espera');lamp(false);$('go').disabled=false;return}
+ state('Acesso liberado');lamp(true);log('ESP32: lâmpada verde acesa');
+ await servoTo(0,90);await walk(-13,3000);await sleep(300);
+ await servoTo(90,0);lamp(false);led(sH,0x555555);led(sV,0x555555);
+ log('Ciclo concluído: catraca travada');state('Em espera');$('go').disabled=false}
+$('go').onclick=run;
+fit();log('Arraste para girar a câmera; pince ou use a roda para zoom.');
+</script></body></html>
