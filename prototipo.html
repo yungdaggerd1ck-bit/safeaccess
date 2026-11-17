@@ -1,25 +1,16 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Protótipo · Safe Access</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body>
-<header><div class="topo"><a class="marca" href="index.html"><img src="safe-access.png" alt="Safe Access" class="logo"></a>
-<nav><a href="index.html">Início</a><a href="sobre.html">Sobre</a><a href="servicos.html">Serviços</a><a href="prototipo.html">Protótipo</a><a href="dashboard.html">Dashboard</a><a href="contato.html">Contato</a></nav></div></header>
-<main>
-<section><h2>Protótipo da catraca</h2>
-<p>Abaixo está a simulação do circuito, com o ESP32, os três leitores RFID (cartão, capacete e bota), o servo que movimenta a catraca, os LEDs de liberação e bloqueio e o buzzer. No protótipo físico, todos esses componentes ficam dentro de uma carcaça, e a simulação mostra o que está por baixo dela.</p>
-<iframe class="wokwi" src="https://wokwi.com/projects/478795308053432321" title="Simulação do protótipo Safe Access no Wokwi" loading="lazy"></iframe>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Protótipo · Safe Access</title><meta name="description" content="Protótipo do sistema e demonstração 3D do portal de acesso com EPI."><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body><header class="topo-wrap"><div class="topo"><a class="marca" href="index.html"><img src="safe-access.png" alt="Safe Access" class="logo"></a><nav><a href="index.html">Início</a><a href="sobre.html">Sobre</a><a href="servicos.html">Serviços</a><a href="prototipo.html" class="ativo">Protótipo</a><a href="saiba-mais.html">Saiba mais</a><a href="dashboard.html">Dashboard</a><a href="contato.html">Contato</a></nav><a class="btn btn-mini" href="contato.html">Solicitar análise</a></div></header><section class="pagehead"><div class="in"><span class="kicker">Protótipo</span><h1>Protótipo do sistema e demonstração 3D</h1><p>Duas visões do projeto: o circuito que vai rodar o protótipo físico e uma demonstração interativa do portal.</p></div></section><main>
+<section class="sec"><h2>Protótipo do sistema</h2>
+<p class="sub">Simulação do circuito que vai rodar o protótipo físico: ESP32, leitores RFID, servo, LEDs e buzzer. No protótipo físico, esses componentes ficam dentro de uma carcaça.</p>
+<iframe class="wokwi" src="https://wokwi.com/projects/478795308053432321" title="Protótipo do sistema no Wokwi" loading="lazy" style="margin-top:24px"></iframe>
 <p class="aviso">Se a simulação não aparecer, <a href="https://wokwi.com/projects/478795308053432321" target="_blank" rel="noopener">abra o projeto no Wokwi</a>.</p></section>
-<section><h2>Portal 3D com EPI e cartão</h2>
-<p>Simulação do portal com o operador. Use "Passar pelo portal" para ver a aproximação ao leitor, a leitura do cartão, a checagem dos EPIs e a passagem pela catraca. Arraste a tela para girar o modelo e use a roda do mouse ou o gesto de pinça para aproximar.</p>
-<iframe class="wokwi" style="height:720px" src="portal-3d.html" title="Protótipo 3D do portal Safe Access com EPI e esteira" loading="lazy"></iframe>
-</section>
-<section><h2>Como o protótipo funciona</h2>
-<div class="grade">
-<div class="card"><h3>Leitura do cartão</h3><p>O colaborador aproxima o cartão. O sistema verifica o cadastro e a validade dos treinamentos.</p></div>
-<div class="card"><h3>Verificação dos EPIs</h3><p>Os leitores de capacete e bota confirmam os equipamentos exigidos para a área.</p></div>
-<div class="card"><h3>Decisão</h3><p>Com as duas verificações aprovadas, o servo libera a catraca. Caso contrário, o LED vermelho e o buzzer indicam o bloqueio.</p></div>
-<div class="card"><h3>Registro</h3><p>Cada tentativa é enviada para a planilha, com data, horário e motivo.</p></div>
+<section class="sec alt"><div class="in"><h2>Protótipo portal 3D (demonstração)</h2>
+<p class="sub">Use "Passar pelo portal" para ver a aproximação ao leitor, a leitura do cartão, a checagem dos EPIs e a passagem pela catraca. Arraste a tela para girar o modelo e use a roda do mouse para aproximar.</p>
+<iframe class="wokwi" src="portal-3d.html" title="Protótipo 3D do portal Safe Access" loading="lazy" style="height:720px;margin-top:24px"></iframe></div></section>
+<section class="sec"><h2>Como o protótipo funciona</h2>
+<div class="passos">
+<div class="passo"><h3>Leitura do cartão</h3><p>O colaborador aproxima o cartão. O sistema verifica o cadastro e a validade dos treinamentos.</p></div>
+<div class="passo"><h3>Verificação dos EPIs</h3><p>Os leitores confirmam os equipamentos exigidos para a área.</p></div>
+<div class="passo"><h3>Decisão</h3><p>Com as duas verificações aprovadas, o servo libera a catraca. Caso contrário, o LED vermelho indica o bloqueio.</p></div>
+<div class="passo"><h3>Registro</h3><p>Cada tentativa é registrada com data, horário e motivo.</p></div>
 </div></section>
-</main>
-<div class="faixa"><h2>Quer ver o portal funcionando na sua operação?</h2><p style="margin:14px 0 22px">Fale com a nossa equipe para uma análise do seu caso.</p><a class="botao" href="contato.html">Solicitar análise</a></div>
-<footer>© Safe Access · Inovação que protege, tecnologia que conecta<br>
-<a href="mailto:safeaccessdiv@gmail.com">safeaccessdiv@gmail.com</a> · (37) 9 9800-9800</footer>
-</body></html>
+</main><section class="faixa"><h2>Quer ver o portal na sua operação?</h2><p>Fale com a nossa equipe para uma análise do seu caso.</p><div class="acoes"><a class="btn" href="contato.html">Solicitar análise</a></div></section><footer class="rodape"><img src="safe-access.png" alt="Safe Access"><div>© Safe Access · Inovação que protege, tecnologia que conecta</div><div style="margin-top:8px"><a href="mailto:safeaccessdiv@gmail.com">safeaccessdiv@gmail.com</a> · (37) 9 9800-9800</div></footer></body></html>
