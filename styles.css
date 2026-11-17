@@ -5,7 +5,7 @@ a{color:var(--or)}
 .topo-wrap{position:sticky;top:0;z-index:20;background:transparent;padding:6px 0}
 .topo{max-width:1180px;margin:auto;display:flex;align-items:center;gap:14px;padding:8px 22px;flex-wrap:wrap}
 .marca{display:inline-flex;align-items:center;padding:6px 16px;border-radius:20px;background:rgba(40,44,52,.55);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
-.logo{height:116px;width:auto;display:block}
+.logo{height:76px;width:auto;display:block}
 nav{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto;padding:6px;border-radius:999px;align-items:center;background:rgba(40,44,52,.55);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
 nav a{color:#fff;text-decoration:none;font-weight:600;font-size:.94rem;padding:8px 14px;border-radius:999px}
 nav a:hover{background:rgba(255,255,255,.14)}
@@ -25,8 +25,8 @@ nav a.ativo{background:var(--or);color:#fff}
 .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
 .chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);padding:8px 14px;border-radius:999px;font-size:.88rem}
 .chip b{color:var(--or2)}
-.logo-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:28px;padding:34px;box-shadow:0 30px 60px rgba(0,0,0,.35);text-align:center;position:relative}
-.logo-card img{width:78%;max-width:440px;height:auto;margin:0 auto;display:block}
+.logo-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:28px;padding:40px;min-height:480px;display:flex;align-items:center;justify-content:center;box-shadow:0 30px 60px rgba(0,0,0,.35);text-align:center;position:relative}
+.logo-card img{width:88%;max-width:540px;height:auto;margin:0 auto;display:block}
 
 main{max-width:1180px;margin:auto;padding:0 22px}
 .sec{padding:70px 0}
