@@ -1,11 +1,11 @@
 :root{--or:#e8731a;--or2:#ff9a3d;--aco:#2b2f36;--cz:#f4f5f7;--tx:#22262c;--mu:#5d636d;--br:#e3e6ea}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Poppins",system-ui,Arial,sans-serif;color:var(--tx);background:linear-gradient(180deg,#1b1e23 0,#1b1e23 104px,#fff 104px);line-height:1.6}
+body{font-family:"Poppins",system-ui,Arial,sans-serif;color:var(--tx);background:linear-gradient(180deg,#1b1e23 0,#1b1e23 200px,#fff 200px);line-height:1.6}
 a{color:var(--or)}
 .topo-wrap{position:sticky;top:0;z-index:20;background:transparent;padding:6px 0}
 .topo{max-width:1180px;margin:auto;display:flex;align-items:center;gap:14px;padding:8px 22px;flex-wrap:wrap}
 .marca{display:inline-flex;align-items:center;padding:6px 16px;border-radius:20px;background:rgba(40,44,52,.55);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
-.logo{height:84px;width:auto;display:block}
+.logo{height:116px;width:auto;display:block}
 nav{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto;padding:6px;border-radius:999px;align-items:center;background:rgba(40,44,52,.55);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
 nav a{color:#fff;text-decoration:none;font-weight:600;font-size:.94rem;padding:8px 14px;border-radius:999px}
 nav a:hover{background:rgba(255,255,255,.14)}
@@ -26,7 +26,7 @@ nav a.ativo{background:var(--or);color:#fff}
 .chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);padding:8px 14px;border-radius:999px;font-size:.88rem}
 .chip b{color:var(--or2)}
 .logo-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:28px;padding:34px;box-shadow:0 30px 60px rgba(0,0,0,.35);text-align:center;position:relative}
-.logo-card img{max-height:360px;width:auto;max-width:100%;height:auto;margin:0 auto}
+.logo-card img{max-height:420px;width:auto;max-width:100%;height:auto;margin:0 auto}
 
 main{max-width:1180px;margin:auto;padding:0 22px}
 .sec{padding:70px 0}
@@ -69,7 +69,7 @@ h3{color:var(--or);font-size:1.15rem;margin-bottom:6px}
  .hero-in{grid-template-columns:1fr}
  .hero h1{font-size:2.2rem}
  .logo-card{max-width:360px;margin:8px auto 0}
- .logo{height:60px}
+ .logo{height:80px}
  nav{margin-left:0;width:100%}
  .pagehead h1{font-size:2rem}
  .sec.alt{padding:50px 22px}
