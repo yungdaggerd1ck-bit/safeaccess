@@ -26,7 +26,7 @@ nav a.ativo{background:var(--or);color:#fff}
 .chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);padding:8px 14px;border-radius:999px;font-size:.88rem}
 .chip b{color:var(--or2)}
 .logo-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:28px;padding:34px;box-shadow:0 30px 60px rgba(0,0,0,.35);text-align:center;position:relative}
-.logo-card img{max-height:420px;width:auto;max-width:100%;height:auto;margin:0 auto}
+.logo-card img{width:78%;max-width:440px;height:auto;margin:0 auto;display:block}
 
 main{max-width:1180px;margin:auto;padding:0 22px}
 .sec{padding:70px 0}
