@@ -2,12 +2,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Poppins",system-ui,Arial,sans-serif;color:var(--tx);background:#fff;line-height:1.6}
 a{color:var(--or)}
-.topo-wrap{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.97);backdrop-filter:blur(6px);border-bottom:1px solid var(--br);box-shadow:0 2px 14px rgba(0,0,0,.05)}
-.topo{max-width:1180px;margin:auto;display:flex;align-items:center;gap:18px;padding:8px 22px;flex-wrap:wrap}
+.topo-wrap{position:sticky;top:0;z-index:20;background:transparent;padding:6px 0}
+.topo{max-width:1180px;margin:auto;display:flex;align-items:center;gap:14px;padding:8px 22px;flex-wrap:wrap}
+.marca{display:inline-flex;align-items:center;padding:6px 16px;border-radius:20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
 .logo{height:76px;width:auto;display:block}
-nav{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto}
-nav a{color:var(--aco);text-decoration:none;font-weight:600;font-size:.94rem;padding:8px 12px;border-radius:999px}
-nav a:hover{background:var(--cz)}
+nav{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto;padding:6px;border-radius:999px;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
+nav a{color:#fff;text-decoration:none;font-weight:600;font-size:.94rem;padding:8px 14px;border-radius:999px}
+nav a:hover{background:rgba(255,255,255,.14)}
 nav a.ativo{background:var(--or);color:#fff}
 .btn{display:inline-block;background:var(--or);color:#fff;padding:13px 26px;border-radius:999px;text-decoration:none;font-weight:700;border:2px solid var(--or);transition:.2s;cursor:pointer}
 .btn:hover{background:#d4620f;border-color:#d4620f}
